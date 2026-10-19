@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace CodeTest;
 
 public static class SubsequenceFinder
@@ -28,7 +30,7 @@ public static class SubsequenceFinder
             return "";
 
         int[] numbers = input.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Select(int.Parse)
+            .Select(number => int.Parse(number, CultureInfo.InvariantCulture))
             .ToArray();
         if (numbers.Length == 0)
             return "";

@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace CodeTest.Tests;
 
 // Each test case is a folder in TestData/ReturnsLongestIncreasingSubsequence containing
@@ -19,7 +21,7 @@ public static class SubsequenceFinderTestData
             var testCaseNames = Directory.GetDirectories(TestDataPath, "TestCase*")
                 .Select(Path.GetFileName)
                 .OfType<string>()
-                .OrderBy(name => int.Parse(name["TestCase".Length..]));
+                .OrderBy(name => int.Parse(name["TestCase".Length..], CultureInfo.InvariantCulture));
 
             foreach (var testCaseName in testCaseNames)
                 testCases.Add(testCaseName);

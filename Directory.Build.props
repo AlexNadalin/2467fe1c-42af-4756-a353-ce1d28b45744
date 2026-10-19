@@ -1,0 +1,14 @@
+<Project>
+
+  <!-- Linting settings shared by every project in the solution -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- Required for the unnecessary usings rule (IDE0005) to run during build -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Warnings fail the build in CI (GitHub Actions sets CI=true) but not locally -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

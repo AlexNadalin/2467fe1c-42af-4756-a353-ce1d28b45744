@@ -58,6 +58,30 @@ Enter numbers separated by spaces: 6 1 5 9 2
 2. Open **Test > Test Explorer** and select **Run All Tests**.
 3. To try the console app, set `CodeTest` as the startup project and press **F5**.
 
+## Linting
+
+Code style and quality rules are defined in `.editorconfig` and enforced by the .NET SDK's built-in analyzers, configured for every project in `Directory.Build.props`. Rule violations appear as warnings when building and are highlighted in Visual Studio as you type.
+
+Check for lint warnings:
+
+```bash
+dotnet build
+```
+
+Check formatting without changing any files:
+
+```bash
+dotnet format --verify-no-changes
+```
+
+Automatically fix formatting and code style issues:
+
+```bash
+dotnet format
+```
+
+In CI (where the `CI` environment variable is `true`), any warning fails the build.
+
 ## How it works
 
 The function makes a single pass over the numbers, tracking where the current increasing run started:
@@ -80,6 +104,8 @@ The solution runs in **O(n)** time, as every number is visited exactly once.
 ## Project structure
 
 ```
+├── .editorconfig                     Code style and lint rules
+├── Directory.Build.props             Analyzer settings shared by all projects
 ├── CodeTest/                         Console app and solution code
 │   ├── Program.cs                    Reads input from the console and prints the result
 │   └── SubsequenceFinder.cs          LongestIncreasingSubsequence implementation

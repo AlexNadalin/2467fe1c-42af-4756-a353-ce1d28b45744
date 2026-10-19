@@ -1,5 +1,3 @@
-using CodeTest;
-
 namespace CodeTest.Tests;
 
 public class SubsequenceFinderTests
