@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/AlexNadalin/2467fe1c-42af-4756-a353-ce1d28b45744/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexNadalin/2467fe1c-42af-4756-a353-ce1d28b45744/actions/workflows/ci.yml)
 
-A C# .NET solution that takes a string of integers separated by single spaces and returns the longest increasing subsequence found in it. If more than one subsequence shares the longest length, the earliest one is returned.
+A C# .NET solution that takes a string of integers separated by whitespace and returns the longest increasing subsequence found in it. If more than one subsequence shares the longest length, the earliest one is returned.
 
 ```
 Input:  6 1 5 9 2
@@ -30,10 +30,10 @@ All commands below are run from the repository root.
 dotnet test
 ```
 
-This builds both projects and runs the provided test cases in `CodeTest.Tests/TestData`, plus additional tests for edge cases such as ties, equal numbers, empty input and invalid input. A successful run ends with:
+This builds both projects and runs the provided test cases in `CodeTest.Tests/TestData`, plus additional tests for edge cases such as ties, equal numbers, tabs and other whitespace, empty input and invalid input, and tests for the console app's output and exit codes. A successful run ends with:
 
 ```
-Passed!  - Failed:     0, Passed:    24, Skipped:     0, Total:    24
+Passed!  - Failed:     0, Passed:    36, Skipped:     0, Total:    36
 ```
 
 To see the result of each individual test case:
@@ -54,6 +54,14 @@ Enter a sequence of numbers when prompted and the result is printed:
 Enter numbers separated by spaces: 6 1 5 9 2
 1 5 9
 ```
+
+Input can also be piped in, which is useful for scripts:
+
+```bash
+echo "6 1 5 9 2" | dotnet run --project CodeTest
+```
+
+Only the result is written to standard output. The prompt and any error messages are written to standard error, so they don't mix with the result. The app exits with code `0` on success and `1` if the input is invalid.
 
 ### Using Visual Studio
 
@@ -87,7 +95,7 @@ In CI (where the `CI` environment variable is `true`), any warning fails the bui
 
 ## Code coverage
 
-Coverage is collected with [Coverlet](https://github.com/coverlet-coverage/coverlet) and turned into a report with [ReportGenerator](https://github.com/danielpalme/ReportGenerator), which is installed as a local dotnet tool. The settings in `coverage.runsettings` measure the solution code only. `Program.cs` is excluded because it only handles console input and output.
+Coverage is collected with [Coverlet](https://github.com/coverlet-coverage/coverlet) and turned into a report with [ReportGenerator](https://github.com/danielpalme/ReportGenerator), which is installed as a local dotnet tool. The settings in `coverage.runsettings` measure the solution code only, including the console app logic in `ConsoleApp.cs`. `Program.cs` is excluded because it is a single line that passes the real console streams to `ConsoleApp.Run`.
 
 Restore the report tool (first time only):
 
@@ -143,7 +151,7 @@ A [GitHub Actions workflow](.github/workflows/ci.yml) runs on every push and pul
 3. Runs all unit tests with code coverage.
 4. Adds a coverage summary to the run's summary page.
 5. Uploads the test results and full HTML coverage report as a downloadable artifact named `test-results-and-coverage`.
-6. Builds the Docker image (which runs the tests again inside the container) and checks the container returns `1 5 9` for the input `6 1 5 9 2`.
+6. Builds the Docker image (which runs the tests again inside the container) and checks the container returns `1 5 9` for the input `6 1 5 9 2`, and exits with a non-zero code for invalid input.
 
 The badge at the top of this README shows the result of the latest run.
 
@@ -163,8 +171,9 @@ The solution runs in **O(n)** time, as every number is visited exactly once.
 
 - **"Subsequence" means adjacent numbers.** The numbers in the result must appear next to each other in the input. This is confirmed by the provided test cases, e.g. `6 2 4 6 1 5 9 2` returns `2 4 6` rather than `2 4 6 9`.
 - **Increasing means strictly increasing.** Equal adjacent numbers end a run, so `1 1 1` returns `1`.
+- **Any whitespace separates numbers.** Spaces, tabs and new lines are all accepted, and repeated whitespace is treated as a single separator. The result is always separated by single spaces.
 - **Empty or whitespace-only input** returns an empty string.
-- **Invalid input** throws a `FormatException` for a value that is not an integer, or an `OverflowException` for a value outside the range of an `int`. The console app catches these and prints a friendly message.
+- **Invalid input** throws a `FormatException` for a value that is not an integer, or an `OverflowException` for a value outside the range of an `int`. The console app catches these, writes a friendly message to standard error and exits with code `1`.
 
 ## Project structure
 
@@ -177,9 +186,11 @@ The solution runs in **O(n)** time, as every number is visited exactly once.
 ├── coverage.runsettings              Code coverage settings
 ├── dotnet-tools.json                 Local dotnet tools (ReportGenerator)
 ├── CodeTest/                         Console app and solution code
-│   ├── Program.cs                    Reads input from the console and prints the result
+│   ├── Program.cs                    Entry point, connects ConsoleApp to the real console
+│   ├── ConsoleApp.cs                 Reads input, writes the result or an error, returns the exit code
 │   └── SubsequenceFinder.cs          LongestIncreasingSubsequence implementation
 └── CodeTest.Tests/                   xUnit test project
+    ├── ConsoleAppTests.cs            Console app output, error and exit code tests
     ├── SubsequenceFinderTests.cs     Provided test cases and edge case tests
     ├── SubsequenceFinderTestData.cs  Discovers and loads test cases from TestData
     └── TestData/

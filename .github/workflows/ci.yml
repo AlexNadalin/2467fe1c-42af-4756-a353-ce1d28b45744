@@ -78,8 +78,16 @@ jobs:
       - name: Run container with sample input
         run: |
           output=$(echo "6 1 5 9 2" | docker run --rm -i longest-increasing-subsequence)
-          echo "$output"
-          if [[ "$output" != *"1 5 9" ]]; then
-            echo "Expected output to end with '1 5 9'"
+          echo "Output: $output"
+          if [[ "$output" != "1 5 9" ]]; then
+            echo "Expected output to be '1 5 9'"
             exit 1
           fi
+
+      - name: Run container with invalid input
+        run: |
+          if echo "1 x 3" | docker run --rm -i longest-increasing-subsequence; then
+            echo "Expected a non-zero exit code for invalid input"
+            exit 1
+          fi
+          echo "Invalid input was rejected with a non-zero exit code"

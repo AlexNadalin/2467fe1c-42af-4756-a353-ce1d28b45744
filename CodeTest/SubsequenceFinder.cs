@@ -5,7 +5,7 @@ namespace CodeTest;
 public static class SubsequenceFinder
 {
     /// <summary>
-    /// Finds the longest run of strictly increasing adjacent integers in a space-separated string.
+    /// Finds the longest run of strictly increasing adjacent integers in a whitespace-separated string.
     /// </summary>
     /// <remarks>
     /// Scans the numbers once from left to right, tracking where the current increasing run
@@ -17,7 +17,7 @@ public static class SubsequenceFinder
     /// Example: for "6 1 5 9 2" the runs are "6", "1 5 9" and "2", so the result is "1 5 9".
     /// </para>
     /// </remarks>
-    /// <param name="input">Integers separated by single spaces, e.g. "6 1 5 9 2".</param>
+    /// <param name="input">Integers separated by whitespace, e.g. "6 1 5 9 2".</param>
     /// <returns>
     /// The longest increasing run as a space-separated string, or an empty string if
     /// <paramref name="input"/> is null, empty or contains only whitespace.
@@ -26,14 +26,13 @@ public static class SubsequenceFinder
     /// <exception cref="OverflowException">Thrown if any value in <paramref name="input"/> is outside the range of an <see cref="int"/>.</exception>
     public static string LongestIncreasingSubsequence(string input)
     {
-        if (string.IsNullOrEmpty(input))
+        if (string.IsNullOrWhiteSpace(input))
             return "";
 
-        int[] numbers = input.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        // A null separator splits on any whitespace character (spaces, tabs, new lines)
+        int[] numbers = input.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
             .Select(number => int.Parse(number, CultureInfo.InvariantCulture))
             .ToArray();
-        if (numbers.Length == 0)
-            return "";
 
         int currentStartIndex = 0;
         int bestStartIndex = 0;

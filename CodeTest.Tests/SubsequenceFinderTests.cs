@@ -12,10 +12,28 @@ public class SubsequenceFinderTests
         Assert.Equal(expected, SubsequenceFinder.LongestIncreasingSubsequence(input));
     }
 
+    // Each case has tied runs with different values, so returning a later run would fail the test
     [Theory]
-    [InlineData("1 2 3 1 2 3", "1 2 3")]
-    [InlineData("5 6 1 2 3 4 7 8", "1 2 3 4 7 8")]
+    [InlineData("1 2 3 0 4 5", "1 2 3")]
+    [InlineData("5 9 1 4 2 3", "5 9")]
     public void ReturnsEarliestSubsequenceWhenTied(string input, string expected)
+    {
+        Assert.Equal(expected, SubsequenceFinder.LongestIncreasingSubsequence(input));
+    }
+
+    [Theory]
+    [InlineData("5 6 1 2 3 4 7 8", "1 2 3 4 7 8")]
+    [InlineData("1 2 0 1 2 3", "0 1 2 3")]
+    public void ReturnsLaterSubsequenceWhenItIsLonger(string input, string expected)
+    {
+        Assert.Equal(expected, SubsequenceFinder.LongestIncreasingSubsequence(input));
+    }
+
+    [Theory]
+    [InlineData("1\t2\t3", "1 2 3")]
+    [InlineData("6\t1 5\n9  2", "1 5 9")]
+    [InlineData("\r\n6 1 5 9 2\r\n", "1 5 9")]
+    public void AcceptsAnyWhitespaceAsSeparator(string input, string expected)
     {
         Assert.Equal(expected, SubsequenceFinder.LongestIncreasingSubsequence(input));
     }
@@ -45,6 +63,8 @@ public class SubsequenceFinderTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
+    [InlineData("\t")]
+    [InlineData(" \t\r\n ")]
     public void ReturnsEmptyStringForEmptyInput(string input)
     {
         Assert.Equal("", SubsequenceFinder.LongestIncreasingSubsequence(input));
