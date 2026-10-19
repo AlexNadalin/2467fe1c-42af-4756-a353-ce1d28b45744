@@ -1,5 +1,7 @@
 # Longest Increasing Subsequence
 
+[![CI](https://github.com/AlexNadalin/2467fe1c-42af-4756-a353-ce1d28b45744/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexNadalin/2467fe1c-42af-4756-a353-ce1d28b45744/actions/workflows/ci.yml)
+
 A C# .NET solution that takes a string of integers separated by single spaces and returns the longest increasing subsequence found in it. If more than one subsequence shares the longest length, the earliest one is returned.
 
 ```
@@ -103,6 +105,18 @@ Open `coveragereport/index.html` in a browser to see line-by-line coverage, or r
 
 Delete the `TestResults` folder before re-running if you only want the latest results in the report.
 
+## Continuous integration
+
+A [GitHub Actions workflow](.github/workflows/ci.yml) runs on every push and pull request to `main`, and can also be started manually from the **Actions** tab. It:
+
+1. Checks formatting with `dotnet format --verify-no-changes`.
+2. Builds the solution, failing on any lint warning.
+3. Runs all unit tests with code coverage.
+4. Adds a coverage summary to the run's summary page.
+5. Uploads the test results and full HTML coverage report as a downloadable artifact named `test-results-and-coverage`.
+
+The badge at the top of this README shows the result of the latest run.
+
 ## How it works
 
 The function makes a single pass over the numbers, tracking where the current increasing run started:
@@ -125,6 +139,7 @@ The solution runs in **O(n)** time, as every number is visited exactly once.
 ## Project structure
 
 ```
+├── .github/workflows/ci.yml          GitHub Actions CI workflow
 ├── .editorconfig                     Code style and lint rules
 ├── Directory.Build.props             Analyzer settings shared by all projects
 ├── coverage.runsettings              Code coverage settings

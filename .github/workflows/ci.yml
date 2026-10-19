@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore tools and dependencies
+        run: |
+          dotnet tool restore
+          dotnet restore
+
+      - name: Check formatting
+        run: dotnet format --verify-no-changes --no-restore
+
+      # Warnings are treated as errors in CI (see Directory.Build.props)
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests with coverage
+        run: >
+          dotnet test --no-build --configuration Release
+          --settings coverage.runsettings
+          --results-directory TestResults
+          --logger "trx;LogFileName=test-results.trx"
+
+      - name: Generate coverage report
+        if: ${{ !cancelled() }}
+        run: >
+          dotnet reportgenerator
+          -reports:"TestResults/*/coverage.cobertura.xml"
+          -targetdir:coveragereport
+          -reporttypes:"Html;MarkdownSummaryGithub"
+
+      - name: Add coverage summary to job summary
+        if: ${{ !cancelled() }}
+        run: cat coveragereport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test results and coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-and-coverage
+          path: |
+            TestResults/**/*.trx
+            coveragereport/
