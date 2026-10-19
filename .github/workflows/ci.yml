@@ -62,3 +62,24 @@ jobs:
           path: |
             TestResults/**/*.trx
             coveragereport/
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      # The Dockerfile runs the unit tests, so this step also fails if any test fails
+      - name: Build Docker image
+        run: docker build --tag longest-increasing-subsequence .
+
+      - name: Run container with sample input
+        run: |
+          output=$(echo "6 1 5 9 2" | docker run --rm -i longest-increasing-subsequence)
+          echo "$output"
+          if [[ "$output" != *"1 5 9" ]]; then
+            echo "Expected output to end with '1 5 9'"
+            exit 1
+          fi

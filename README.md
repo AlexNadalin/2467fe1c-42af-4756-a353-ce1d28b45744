@@ -12,8 +12,9 @@ Output: 1 5 9
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [Docker](https://www.docker.com/get-started/) (optional, only needed to run the solution in a container)
 
-Check your installed version with:
+Check your installed .NET version with:
 
 ```bash
 dotnet --version
@@ -105,6 +106,34 @@ Open `coveragereport/index.html` in a browser to see line-by-line coverage, or r
 
 Delete the `TestResults` folder before re-running if you only want the latest results in the report.
 
+## Docker
+
+The `Dockerfile` builds the solution, runs the unit tests and packages the console app into a small runtime-only image. If any test fails, the image is not built.
+
+Build the image:
+
+```bash
+docker build --tag longest-increasing-subsequence .
+```
+
+Run the console app interactively and enter numbers when prompted:
+
+```bash
+docker run --rm -it longest-increasing-subsequence
+```
+
+Or pipe the input in directly:
+
+```bash
+echo "6 1 5 9 2" | docker run --rm -i longest-increasing-subsequence
+```
+
+To run only the unit tests inside a container, build the `test` stage:
+
+```bash
+docker build --target test .
+```
+
 ## Continuous integration
 
 A [GitHub Actions workflow](.github/workflows/ci.yml) runs on every push and pull request to `main`, and can also be started manually from the **Actions** tab. It:
@@ -114,6 +143,7 @@ A [GitHub Actions workflow](.github/workflows/ci.yml) runs on every push and pul
 3. Runs all unit tests with code coverage.
 4. Adds a coverage summary to the run's summary page.
 5. Uploads the test results and full HTML coverage report as a downloadable artifact named `test-results-and-coverage`.
+6. Builds the Docker image (which runs the tests again inside the container) and checks the container returns `1 5 9` for the input `6 1 5 9 2`.
 
 The badge at the top of this README shows the result of the latest run.
 
@@ -140,6 +170,8 @@ The solution runs in **O(n)** time, as every number is visited exactly once.
 
 ```
 ├── .github/workflows/ci.yml          GitHub Actions CI workflow
+├── Dockerfile                        Builds, tests and packages the console app
+├── .dockerignore                     Files excluded from the Docker build
 ├── .editorconfig                     Code style and lint rules
 ├── Directory.Build.props             Analyzer settings shared by all projects
 ├── coverage.runsettings              Code coverage settings

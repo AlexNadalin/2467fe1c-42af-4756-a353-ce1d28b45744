@@ -1,0 +1,12 @@
+# Build output and local tooling files
+**/bin/
+**/obj/
+**/.vs/
+**/TestResults/
+coveragereport/
+
+# Not needed inside the image
+.git/
+.github/
+Dockerfile
+.dockerignore
