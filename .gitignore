@@ -98,6 +98,7 @@ StyleCopReport.xml
 coverage*.json
 coverage*.xml
 coverage*.info
+coveragereport/
 .axoCover/*
 !.axoCover/settings.json
 

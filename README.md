@@ -82,6 +82,27 @@ dotnet format
 
 In CI (where the `CI` environment variable is `true`), any warning fails the build.
 
+## Code coverage
+
+Coverage is collected with [Coverlet](https://github.com/coverlet-coverage/coverlet) and turned into a report with [ReportGenerator](https://github.com/danielpalme/ReportGenerator), which is installed as a local dotnet tool. The settings in `coverage.runsettings` measure the solution code only. `Program.cs` is excluded because it only handles console input and output.
+
+Restore the report tool (first time only):
+
+```bash
+dotnet tool restore
+```
+
+Run the tests with coverage and generate the report:
+
+```bash
+dotnet test --settings coverage.runsettings --results-directory TestResults
+dotnet reportgenerator -reports:"TestResults/*/coverage.cobertura.xml" -targetdir:coveragereport -reporttypes:"Html;TextSummary"
+```
+
+Open `coveragereport/index.html` in a browser to see line-by-line coverage, or read the summary in `coveragereport/Summary.txt`. The current coverage is **100%** of lines and branches.
+
+Delete the `TestResults` folder before re-running if you only want the latest results in the report.
+
 ## How it works
 
 The function makes a single pass over the numbers, tracking where the current increasing run started:
@@ -106,6 +127,8 @@ The solution runs in **O(n)** time, as every number is visited exactly once.
 ```
 ├── .editorconfig                     Code style and lint rules
 ├── Directory.Build.props             Analyzer settings shared by all projects
+├── coverage.runsettings              Code coverage settings
+├── dotnet-tools.json                 Local dotnet tools (ReportGenerator)
 ├── CodeTest/                         Console app and solution code
 │   ├── Program.cs                    Reads input from the console and prints the result
 │   └── SubsequenceFinder.cs          LongestIncreasingSubsequence implementation
